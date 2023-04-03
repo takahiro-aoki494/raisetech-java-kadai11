@@ -1,7 +1,7 @@
 # 最終課題概要
 タスクの一覧を管理するAPIを作成予定
 <br>仕様書は下記です。</br>
-https://github.com/takahiro-aoki494/raisetech-java-kadai11/swagger
+https://takahiro-aoki494.github.io/raisetech-java-kadai11/swagger/
 
 ## データベース定義
 |カラム名（論理名）   |カラム名（物理名）        |型・桁                        |Nullableb                      |その他コメント                 |
