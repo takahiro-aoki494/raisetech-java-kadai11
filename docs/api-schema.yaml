@@ -1,0 +1,283 @@
+openapi: "3.0.0"
+info:
+  title: TODO API Document
+  version: "0.0.1"
+  description: TODO APIのドキュメントです
+tags:
+  - name: tasks
+    description: TODO管理のAPI
+
+paths:
+  /tasks/:
+    get:
+      summary: "タスク一覧取得"
+      description: "タスクの一覧を取得できる"
+      tags:
+        - tasks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+    post:
+      summary: "タスクを登録"
+      description: "タスクを作成"
+      tags:
+        - tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskForm"
+      responses:
+        201:
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                id: 1
+                message: "task successfully created"
+
+        400:
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatedError"
+
+  /tasks/{id}:
+    get:
+      summary: "タスクを1件取得"
+      description: "指定されたidのタスクを取得"
+      tags:
+        - tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "取得対象のid"
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+    patch:
+      summary: "タスクを1件更新"
+      description: "指定されたidのタスクを更新"
+      tags:
+        - tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "更新対象のid"
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: "タスクの更新内容"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskForm"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                id: 1
+                message: "task successfully updated"
+        400:
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatedError"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+    delete:
+      summary: "タスクを削除"
+      description: "タスクを1件削除"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "削除対象のid"
+          schema:
+            type: integer
+            format: int32
+      tags:
+        - tasks
+      responses:
+        200:
+          description: "Deleted"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                id: 1
+                message: "task successfully deleted"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+
+components:
+  schemas:
+    TaskForm:
+      type: object
+      properties:
+        shipping_order_number:
+          type: string
+          description: "出荷指示書番号"
+        delivery date:
+          type: string
+          format: date
+          description: "納入予定日"
+        estimated_shipping_date:
+           type: string
+           format: date
+           description: "出荷予定日"
+        inspection_complete_date:
+          type: string
+          format: date
+          description: "検査完了予定日"
+        person_in_charge:
+          type: string
+          description: "担当者"
+        progress:
+          type: string
+          description: "進捗状況"
+        shipment_quantity:
+          type: integer
+          format: int32
+          description: "出荷数量"
+        product code:
+          type: string
+          description: "プロダクトコード"
+        model_name:
+          type: string
+          description: "機種名称"
+    Task:
+      description: "タスクの内容"
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: "タスクID"
+        shipping_order_number:
+          type: string
+          description: "出荷指示書番号"
+        delivery date:
+          type: string
+          format: date
+          description: "納入予定日"
+        estimated_shipping_date:
+          type: string
+          format: date
+          description: "出荷予定日"
+        inspection_complete_date:
+          type: string
+          format: date
+          description: "検査完了予定日"
+        person_in_charge:
+          type: string
+          description: "担当者"
+        progress:
+          type: string
+          description: "進捗状況"
+        shipment_quantity:
+          type: integer
+          format: int32
+          description: "出荷数量"
+        product code:
+          type: string
+          description: "プロダクトコード"
+        model_name:
+          type: string
+          description: "機種名称"
+        created_at:
+          type: string
+          format: date-time
+          description: "作成日時"
+        updated_at:
+          type: string
+          format: date-time
+          description: "更新日時"
+    Response:
+      description: "各処理ののレスポンスボディ"
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: "タスクのid"
+          example: 1
+        message:
+          type: string
+          description: "処理成功時のメッセージ"
+
+    ResourceNotFoundError:
+      description: "指定したリソースが存在しない"
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: "発生日時"
+        status:
+          type: string
+          description: "HttpStatusが入る"
+        error:
+          type: string
+          description: "errorの内容が入る"
+        message:
+          type: string
+          description: "メッセージの内容が入る"
+        path:
+          type: string
+          description: "メソッドが実行された際指定されたURI"
+    ValidatedError:
+      description: "バリデーションエラー"
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: "発生日時"
+        status:
+          type: string
+          description: "HttpStatusが入る"
+        error:
+          type: string
+          description: "errorの内容が入る"
+        message:
+          type: string
+          description: "メッセージの内容が入る"
