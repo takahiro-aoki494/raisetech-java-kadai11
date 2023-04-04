@@ -1,17 +1,17 @@
 openapi: "3.0.0"
 info:
-  title: TODO API Document
+  title: 出荷検査進捗管理 API Document
   version: "0.0.1"
-  description: TODO APIのドキュメントです
+  description: 出荷検査進捗管理 APIのドキュメントです
 tags:
   - name: tasks
-    description: TODO管理のAPI
+    description: 出荷検査進捗管理のAPI
 
 paths:
   /tasks/:
     get:
       summary: "タスク一覧取得"
-      description: "タスクの一覧を取得できる"
+      description: "タスクの一覧を取得できる。"
       tags:
         - tasks
       responses:
@@ -23,7 +23,7 @@ paths:
                 $ref: "#/components/schemas/Task"
     post:
       summary: "タスクを登録"
-      description: "タスクを作成"
+      description: "タスクを作成する。"
       tags:
         - tasks
       requestBody:
@@ -53,7 +53,7 @@ paths:
   /tasks/{id}:
     get:
       summary: "タスクを1件取得"
-      description: "指定されたidのタスクを取得"
+      description: "指定されたidのタスクを取得する。"
       tags:
         - tasks
       parameters:
@@ -64,6 +64,244 @@ paths:
           schema:
             type: integer
             format: int32
+            example: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+  /tasks/{shipping_order_number}:
+    get:
+      summary: "指定された出荷指示書番号のタスクを1件取得"
+      description: "指定された出荷指示書番号のタスクを取得する。"
+      tags:
+        - tasks
+      parameters:
+        - name: shipping_order_number
+          in: path
+          required: true
+          description: "取得対象の出荷指示書番号"
+          schema:
+            type: string
+            example: "aaa12345678-001"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+  /tasks/{delivery date}:
+    get:
+      summary: "指定された納入予定日以降のタスクを取得"
+      description: "指定された納入予定日以降のタスクを取得する。クエリパラメータで終点が指定された場合は指定日から終点となる日を取得期間とする。"
+      tags:
+        - tasks
+      parameters:
+        - name: delivery date
+          in: path
+          required: true
+          description: "取得対象期間の始点となる日付"
+          schema:
+            type: string
+            format: date
+            example: "2023/05/01"
+        - name: last_date
+          in: query
+          required: false
+          description: "取得対象期間の終点となる日付"
+          schema:
+            type: string
+            format: date
+            example: "2023/05/31"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+  /tasks/{estimated_shipping_date}:
+    get:
+      summary: "指定された出荷予定日以降のタスクを取得"
+      description: "指定された出荷予定日以降のタスクを取得する。クエリパラメータで終点が指定された場合は指定日から終点となる日を取得期間とする。"
+      tags:
+        - tasks
+      parameters:
+        - name: estimated_shipping_date
+          in: path
+          required: true
+          description: "取得対象期間の始点となる日付"
+          schema:
+            type: string
+            format: date
+            example: "2023/05/01"
+        - name: last_date
+          in: query
+          required: false
+          description: "取得対象期間の終点となる日付"
+          schema:
+            type: string
+            format: date
+            example: "2023/05/31"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+  /tasks/{inspection_complete_date}:
+    get:
+      summary: "指定された検査完了予定日のタスクを取得"
+      description: "指定された検査完了予定日のタスクを取得する。クエリパラメータで終点が指定された場合は指定日から終点となる日を取得期間とする。"
+      tags:
+        - tasks
+      parameters:
+        - name: inspection_complete_date
+          in: path
+          required: true
+          description: "取得対象となる日付"
+          schema:
+            type: string
+            format: date
+            example: "2023/05/01"
+        - name: last_date
+          in: query
+          required: false
+          description: "取得対象期間の終点となる日付"
+          schema:
+            type: string
+            format: date
+            example: "2023/05/31"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+  /tasks/{person_in_charge}:
+    get:
+      summary: "指定された担当者のタスクを取得"
+      description: "指定された担当者のタスクを取得する。"
+      tags:
+        - tasks
+      parameters:
+        - name: person_in_charge
+          in: path
+          required: true
+          description: "担当者"
+          schema:
+            type: string
+            example: "山田"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+  /tasks/{progress}:
+    get:
+      summary: "指定された進捗状況のタスクを取得"
+      description: "指定された進捗状況のタスクを取得する。クエリパラメータで追加の進捗状況が指定された場合は合わせて取得する。"
+      tags:
+        - tasks
+      parameters:
+        - name: progress
+          in: path
+          required: true
+          description: "取得対象となる進捗状況"
+          schema:
+            type: string
+            example: "検査前"
+        - name: add_progress1
+          in: query
+          required: false
+          description: "追加取得対象となるパラメータ"
+          schema:
+            type: string
+            example: "検査中"
+        - name: add_progress2
+          in: query
+          required: false
+          description: "追加取得対象となるパラメータ"
+          schema:
+            type: string
+            example: "検査ログ確認中"
+        - name: add_progress3
+          in: query
+          required: false
+          description: "追加取得対象となるパラメータ"
+          schema:
+            type: string
+            example: "検査済み"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+  /tasks/{product code}:
+    get:
+      summary: "指定されたプロダクトコードのタスクを取得"
+      description: "指定されたプロダクトコードのタスクを取得する。"
+      tags:
+        - tasks
+      parameters:
+        - name: product code
+          in: path
+          required: true
+          description: "プロダクトコード"
+          schema:
+            type: string
+            example: "C9407R"
       responses:
         '200':
           description: OK
@@ -90,6 +328,7 @@ paths:
           schema:
             type: integer
             format: int32
+            example: 1
       requestBody:
         description: "タスクの更新内容"
         content:
@@ -129,6 +368,7 @@ paths:
           schema:
             type: integer
             format: int32
+            example: 1
       tags:
         - tasks
       responses:
@@ -232,7 +472,7 @@ components:
           format: date-time
           description: "更新日時"
     Response:
-      description: "各処理ののレスポンスボディ"
+      description: "各処理のレスポンスボディ"
       type: object
       properties:
         id:
@@ -255,12 +495,15 @@ components:
         status:
           type: string
           description: "HttpStatusが入る"
+          example: 404
         error:
           type: string
           description: "errorの内容が入る"
+          example: "Not Found"
         message:
           type: string
           description: "メッセージの内容が入る"
+          example: "resource not found"
         path:
           type: string
           description: "メソッドが実行された際指定されたURI"
@@ -275,9 +518,44 @@ components:
         status:
           type: string
           description: "HttpStatusが入る"
+          example: 400
         error:
           type: string
           description: "errorの内容が入る"
+          example: "Bad Request"
         message:
+          type: array
+          description: "バリデーションエラーメッセージの内容が入る"
+          items:
+            $ref: "#/components/schemas/ValidatedErrorParam"
+    ValidatedErrorParam:
+      description: "バリデーションエラーの内容、実際のレスポンスは発生したバリデーションエラーのみ格納される"
+      type: object
+      properties:
+        shipping_order_number:
           type: string
-          description: "メッセージの内容が入る"
+          description: "出荷指示書番号のバリデーションエラー"
+        delivery date:
+          type: string
+          description: "納入予定日のバリデーションエラー"
+        estimated_shipping_date:
+          type: string
+          description: "出荷予定日のバリデーションエラー"
+        inspection_complete_date:
+          type: string
+          description: "検査完了予定日のバリデーションエラー"
+        person_in_charge:
+          type: string
+          description: "担当者のバリデーションエラー"
+        progress:
+          type: string
+          description: "進捗状況のバリデーションエラー"
+        shipment_quantity:
+          type: string
+          description: "出荷数量のバリデーションエラー"
+        product code:
+          type: string
+          description: "プロダクトコードのバリデーションエラー"
+        model_name:
+          type: string
+          description: "機種名称のバリデーションエラー"

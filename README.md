@@ -25,8 +25,14 @@ https://takahiro-aoki494.github.io/raisetech-java-kadai11/swagger/
 |:--------------------|:-------------------------|:--------------------------------|
 | タスクを全件取得                 | GET                       | /tasks/                         |
 | タスクを1件取得                 | GET                       | /tasks/{id}                     |
+| 指定された出荷指示書番号のタスクを1件取得                 | GET                       | /tasks/{shipping_order_number}                    |
+| 指定された納入予定日以降のタスクを取得              | GET                       | /tasks/{delivery date}                   |
+| 指定された出荷予定日以降のタスクを取得                 | GET                       | /tasks/{estimated_shipping_date}                    |
+| 指定された検査完了予定日のタスクを取得                 | GET                       | /tasks/{inspection_complete_date}                   |
+| 指定された担当者のタスクを取得"                | GET                       | /tasks/{person_in_charge}                   |
+| 指指定された進捗状況のタスクを取得                 | GET                       | /tasks/{progress}                   |
+| 指定されたプロダクトコードのタスクを取得                 | GET                       | /tasks/{product code}                   |
 | タスクを登録                 | POST                       | /tasks/                         |
 | タスクを修正                 | PATCH                       | /tasks/{id}                     |
 | タスクを削除                 | DELETE                       | /tasks/{id}                     |
-
 
