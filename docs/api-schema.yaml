@@ -1,7 +1,7 @@
 openapi: "3.0.0"
 info:
   title: 出荷検査進捗管理 API Document
-  version: "0.0.1"
+  version: "0.0.2"
   description: 出荷検査進捗管理 APIのドキュメントです
 tags:
   - name: tasks
@@ -50,116 +50,40 @@ paths:
               schema:
                 $ref: "#/components/schemas/ValidatedError"
 
-  /tasks/{shipping_order_number}:
+  /tasks/search:
     get:
-      summary: "指定された出荷指示書番号のタスクを1件取得"
-      description: "指定された出荷指示書番号のタスクを取得する。"
+      summary: "指定されたクエリパラメータでタスクを取得"
+      description: "指指定されたクエリパラメータでタスクを1件または複数件取得する。"
       tags:
         - tasks
       parameters:
         - name: shipping_order_number
-          in: path
-          required: true
+          in: query
+          required: false
           description: "取得対象の出荷指示書番号"
           schema:
             type: string
             example: "aaa12345678-001"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Task"
-        '404':
-          description: "Not Found"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResourceNotFoundError"
-  /tasks/{delivery date}:
-    get:
-      summary: "指定された納入予定日以降のタスクを取得"
-      description: "指定された納入予定日以降のタスクを取得する。クエリパラメータで終点が指定された場合は指定日から終点となる日を取得期間とする。"
-      tags:
-        - tasks
-      parameters:
-        - name: delivery date
-          in: path
-          required: true
-          description: "取得対象期間の始点となる日付"
+        - name: delivery_date
+          in: query
+          required: false
+          description: "納入予定日取得対象期間の始点となる日付"
           schema:
             type: string
             format: date
             example: "2023/05/01"
-        - name: last_date
-          in: query
-          required: false
-          description: "取得対象期間の終点となる日付"
-          schema:
-            type: string
-            format: date
-            example: "2023/05/31"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Task"
-        '404':
-          description: "Not Found"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResourceNotFoundError"
-  /tasks/{estimated_shipping_date}:
-    get:
-      summary: "指定された出荷予定日以降のタスクを取得"
-      description: "指定された出荷予定日以降のタスクを取得する。クエリパラメータで終点が指定された場合は指定日から終点となる日を取得期間とする。"
-      tags:
-        - tasks
-      parameters:
         - name: estimated_shipping_date
-          in: path
-          required: true
-          description: "取得対象期間の始点となる日付"
+          in: query
+          required: false
+          description: "出荷予定日取得対象期間の始点となる日付"
           schema:
             type: string
             format: date
             example: "2023/05/01"
-        - name: last_date
-          in: query
-          required: false
-          description: "取得対象期間の終点となる日付"
-          schema:
-            type: string
-            format: date
-            example: "2023/05/31"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Task"
-        '404':
-          description: "Not Found"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResourceNotFoundError"
-  /tasks/{inspection_complete_date}:
-    get:
-      summary: "指定された検査完了予定日のタスクを取得"
-      description: "指定された検査完了予定日のタスクを取得する。クエリパラメータで終点が指定された場合は指定日から終点となる日を取得期間とする。"
-      tags:
-        - tasks
-      parameters:
         - name: inspection_complete_date
-          in: path
-          required: true
-          description: "取得対象となる日付"
+          in: query
+          required: false
+          description: "検査完了予定日取得対象期間の始点となる日付"
           schema:
             type: string
             format: date
@@ -172,6 +96,20 @@ paths:
             type: string
             format: date
             example: "2023/05/31"
+        - name: status
+          in: query
+          required: false
+          description: "取得対象となる進捗状況"
+          schema:
+            type: string
+            example: "検査前"
+        - name: product_code
+          in: query
+          required: false
+          description: "プロダクトコード"
+          schema:
+            type: string
+            example: "C9407R"
       responses:
         '200':
           description: OK
@@ -185,7 +123,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResourceNotFoundError"
-  /tasks/{person_in_charge}:
+  /person_tasks/{person_in_charge}:
     get:
       summary: "指定された担当者のタスクを取得"
       description: "指定された担当者のタスクを取得する。"
@@ -199,81 +137,6 @@ paths:
           schema:
             type: string
             example: "山田"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Task"
-        '404':
-          description: "Not Found"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResourceNotFoundError"
-  /tasks/{progress}:
-    get:
-      summary: "指定された進捗状況のタスクを取得"
-      description: "指定された進捗状況のタスクを取得する。クエリパラメータで追加の進捗状況が指定された場合は合わせて取得する。"
-      tags:
-        - tasks
-      parameters:
-        - name: progress
-          in: path
-          required: true
-          description: "取得対象となる進捗状況"
-          schema:
-            type: string
-            example: "検査前"
-        - name: add_progress1
-          in: query
-          required: false
-          description: "追加取得対象となるパラメータ"
-          schema:
-            type: string
-            example: "検査中"
-        - name: add_progress2
-          in: query
-          required: false
-          description: "追加取得対象となるパラメータ"
-          schema:
-            type: string
-            example: "検査ログ確認中"
-        - name: add_progress3
-          in: query
-          required: false
-          description: "追加取得対象となるパラメータ"
-          schema:
-            type: string
-            example: "検査済み"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Task"
-        '404':
-          description: "Not Found"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResourceNotFoundError"
-  /tasks/{product code}:
-    get:
-      summary: "指定されたプロダクトコードのタスクを取得"
-      description: "指定されたプロダクトコードのタスクを取得する。"
-      tags:
-        - tasks
-      parameters:
-        - name: product code
-          in: path
-          required: true
-          description: "プロダクトコード"
-          schema:
-            type: string
-            example: "C9407R"
       responses:
         '200':
           description: OK
