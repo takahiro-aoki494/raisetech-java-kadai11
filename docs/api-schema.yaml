@@ -50,34 +50,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ValidatedError"
 
-  /tasks/{id}:
-    get:
-      summary: "タスクを1件取得"
-      description: "指定されたidのタスクを取得する。"
-      tags:
-        - tasks
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: "取得対象のid"
-          schema:
-            type: integer
-            format: int32
-            example: 1
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Task"
-        '404':
-          description: "Not Found"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResourceNotFoundError"
   /tasks/{shipping_order_number}:
     get:
       summary: "指定された出荷指示書番号のタスクを1件取得"
@@ -315,6 +287,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResourceNotFoundError"
+  /tasks/{id}:
     patch:
       summary: "タスクを1件更新"
       description: "指定されたidのタスクを更新"
