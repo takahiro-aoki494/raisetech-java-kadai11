@@ -1,0 +1,397 @@
+openapi: "3.0.0"
+info:
+  title: 出荷検査進捗管理 API Document
+  version: "0.0.2"
+  description: 出荷検査進捗管理 APIのドキュメントです
+tags:
+  - name: tasks
+    description: 出荷検査進捗管理のAPI
+
+paths:
+  /tasks/:
+    get:
+      summary: "タスク一覧取得"
+      description: "タスクの一覧を取得できる。"
+      tags:
+        - tasks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+    post:
+      summary: "タスクを登録"
+      description: "タスクを作成する。"
+      tags:
+        - tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskForm"
+      responses:
+        201:
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                id: 1
+                message: "task successfully created"
+
+        400:
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatedError"
+
+  /tasks/search:
+    get:
+      summary: "指定されたクエリパラメータでタスクを取得"
+      description: "指指定されたクエリパラメータでタスクを1件または複数件取得する。"
+      tags:
+        - tasks
+      parameters:
+        - name: shipping_order_number
+          in: query
+          required: false
+          description: "取得対象の出荷指示書番号"
+          schema:
+            type: string
+            example: "aaa12345678-001"
+        - name: delivery_date
+          in: query
+          required: false
+          description: "納入予定日取得対象期間の始点となる日付"
+          schema:
+            type: string
+            format: date
+            example: "2023/05/01"
+        - name: estimated_shipping_date
+          in: query
+          required: false
+          description: "出荷予定日取得対象期間の始点となる日付"
+          schema:
+            type: string
+            format: date
+            example: "2023/05/01"
+        - name: inspection_complete_date
+          in: query
+          required: false
+          description: "検査完了予定日取得対象期間の始点となる日付"
+          schema:
+            type: string
+            format: date
+            example: "2023/05/01"
+        - name: last_date
+          in: query
+          required: false
+          description: "取得対象期間の終点となる日付"
+          schema:
+            type: string
+            format: date
+            example: "2023/05/31"
+        - name: status
+          in: query
+          required: false
+          description: "取得対象となる進捗状況"
+          schema:
+            type: string
+            example: "検査前"
+        - name: product_code
+          in: query
+          required: false
+          description: "プロダクトコード"
+          schema:
+            type: string
+            example: "C9407R"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+  /person_tasks/{person_in_charge}:
+    get:
+      summary: "指定された担当者のタスクを取得"
+      description: "指定された担当者のタスクを取得する。"
+      tags:
+        - tasks
+      parameters:
+        - name: person_in_charge
+          in: path
+          required: true
+          description: "担当者"
+          schema:
+            type: string
+            example: "山田"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+  /tasks/{id}:
+    patch:
+      summary: "タスクを1件更新"
+      description: "指定されたidのタスクを更新"
+      tags:
+        - tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "更新対象のid"
+          schema:
+            type: integer
+            format: int32
+            example: 1
+      requestBody:
+        description: "タスクの更新内容"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskForm"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                id: 1
+                message: "task successfully updated"
+        400:
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidatedError"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+    delete:
+      summary: "タスクを削除"
+      description: "タスクを1件削除"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "削除対象のid"
+          schema:
+            type: integer
+            format: int32
+            example: 1
+      tags:
+        - tasks
+      responses:
+        200:
+          description: "Deleted"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              example:
+                id: 1
+                message: "task successfully deleted"
+        '404':
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceNotFoundError"
+
+components:
+  schemas:
+    TaskForm:
+      type: object
+      properties:
+        shipping_order_number:
+          type: string
+          description: "出荷指示書番号"
+        delivery date:
+          type: string
+          format: date
+          description: "納入予定日"
+        estimated_shipping_date:
+           type: string
+           format: date
+           description: "出荷予定日"
+        inspection_complete_date:
+          type: string
+          format: date
+          description: "検査完了予定日"
+        person_in_charge:
+          type: string
+          description: "担当者"
+        progress:
+          type: string
+          description: "進捗状況"
+        shipment_quantity:
+          type: integer
+          format: int32
+          description: "出荷数量"
+        product code:
+          type: string
+          description: "プロダクトコード"
+        model_name:
+          type: string
+          description: "機種名称"
+    Task:
+      description: "タスクの内容"
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: "タスクID"
+        shipping_order_number:
+          type: string
+          description: "出荷指示書番号"
+        delivery date:
+          type: string
+          format: date
+          description: "納入予定日"
+        estimated_shipping_date:
+          type: string
+          format: date
+          description: "出荷予定日"
+        inspection_complete_date:
+          type: string
+          format: date
+          description: "検査完了予定日"
+        person_in_charge:
+          type: string
+          description: "担当者"
+        progress:
+          type: string
+          description: "進捗状況"
+        shipment_quantity:
+          type: integer
+          format: int32
+          description: "出荷数量"
+        product code:
+          type: string
+          description: "プロダクトコード"
+        model_name:
+          type: string
+          description: "機種名称"
+        created_at:
+          type: string
+          format: date-time
+          description: "作成日時"
+        updated_at:
+          type: string
+          format: date-time
+          description: "更新日時"
+    Response:
+      description: "各処理のレスポンスボディ"
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: "タスクのid"
+          example: 1
+        message:
+          type: string
+          description: "処理成功時のメッセージ"
+
+    ResourceNotFoundError:
+      description: "指定したリソースが存在しない"
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: "発生日時"
+        status:
+          type: string
+          description: "HttpStatusが入る"
+          example: 404
+        error:
+          type: string
+          description: "errorの内容が入る"
+          example: "Not Found"
+        message:
+          type: string
+          description: "メッセージの内容が入る"
+          example: "resource not found"
+        path:
+          type: string
+          description: "メソッドが実行された際指定されたURI"
+    ValidatedError:
+      description: "バリデーションエラー"
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: "発生日時"
+        status:
+          type: string
+          description: "HttpStatusが入る"
+          example: 400
+        error:
+          type: string
+          description: "errorの内容が入る"
+          example: "Bad Request"
+        message:
+          type: array
+          description: "バリデーションエラーメッセージの内容が入る"
+          items:
+            $ref: "#/components/schemas/ValidatedErrorParam"
+    ValidatedErrorParam:
+      description: "バリデーションエラーの内容、実際のレスポンスは発生したバリデーションエラーのみ格納される"
+      type: object
+      properties:
+        shipping_order_number:
+          type: string
+          description: "出荷指示書番号のバリデーションエラー"
+        delivery date:
+          type: string
+          description: "納入予定日のバリデーションエラー"
+        estimated_shipping_date:
+          type: string
+          description: "出荷予定日のバリデーションエラー"
+        inspection_complete_date:
+          type: string
+          description: "検査完了予定日のバリデーションエラー"
+        person_in_charge:
+          type: string
+          description: "担当者のバリデーションエラー"
+        progress:
+          type: string
+          description: "進捗状況のバリデーションエラー"
+        shipment_quantity:
+          type: string
+          description: "出荷数量のバリデーションエラー"
+        product code:
+          type: string
+          description: "プロダクトコードのバリデーションエラー"
+        model_name:
+          type: string
+          description: "機種名称のバリデーションエラー"
